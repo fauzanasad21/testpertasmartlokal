@@ -1,0 +1,12 @@
+Flask
+pandas
+numpy
+pymodbus
+paho-mqtt
+psycopg2-binary
+joblib
+websockets
+coolprop
+scikit-learn==1.5.1
+xgboost
+gunicorn
