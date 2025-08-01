@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 146.05 45.01">
+  <defs>
+    <style>
+      .cls-1 {
+        letter-spacing: .08em;
+      }
+
+      .cls-2 {
+        fill: #484f5b;
+      }
+
+      .cls-2, .cls-3, .cls-4 {
+        stroke-width: 0px;
+      }
+
+      .cls-3 {
+        fill: #3e4651;
+      }
+
+      .cls-5 {
+        letter-spacing: .03em;
+      }
+
+      .cls-6 {
+        fill: #082e1c;
+        font-family: TASAOrbiterDisplay-Bold, 'TASA Orbiter Display';
+        font-size: 10px;
+        font-weight: 700;
+      }
+
+      .cls-7 {
+        letter-spacing: .07em;
+      }
+
+      .cls-4 {
+        fill: #525867;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <text class="cls-6" transform="translate(79.93 14.23)"><tspan class="cls-7"><tspan x="0" y="0">SMART</tspan></tspan><tspan class="cls-7" x="0" y="12">MONI</tspan><tspan class="cls-5" x="28.2" y="12">T</tspan><tspan class="cls-1" x="34.2" y="12">ORING</tspan><tspan class="cls-7"><tspan x="0" y="24">SERVER</tspan></tspan></text>
+    <polygon class="cls-3" points="5.51 0 19.1 0 13.59 18.25 0 18.25 5.51 0"/>
+    <polygon class="cls-2" points="32.69 45.01 19.1 45.01 5.51 .01 19.1 .01 32.69 45.01"/>
+    <polygon class="cls-4" points="29.38 33.53 19.1 45.01 33.24 45 59.93 19.5 60.12 45 71.97 45 71.97 0 24.5 0 24.5 11.33 51.48 11.52 29.38 33.53"/>
+  </g>
+</svg>

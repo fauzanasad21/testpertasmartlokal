@@ -1,0 +1,20 @@
+[
+    {
+        "title": "Angkasa Awan",
+        "tags" : ["doraemon", "kartun"],
+        "date" : "2024-08-10",
+        "isNew" : true
+    },
+    {
+        "title": "kehidupan selanjutnya",
+        "tags" : ["mangkujiwo", "film"],
+        "date" : "2024-08-11",
+        "isNew" : false
+    },
+    {
+        "title": "alat pengembang tai",
+        "tags" : ["doraemon", "animasi"],
+        "date" : "2024-08-12",
+        "isNew" : true
+    }
+]

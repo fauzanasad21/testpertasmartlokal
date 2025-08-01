@@ -1,0 +1,15 @@
+config:
+  target: 'https://backend-agustrisa.as1.pitunnel.net'
+  phases:
+    - duration: 60          # Durasi pengujian selama 60 detik
+      arrivalRate: 20       # 20 pengguna virtual per detik
+  defaults:
+    headers:
+      Content-Type: 'application/json'
+scenarios:
+  - flow:
+      - get:
+          url: "http://localhost:9921/api/dataGrafik/?startDate=2024-9-14&endDate=2024-9-16&type=temperature"
+          # Menambahkan validasi, memastikan server merespons dengan status 200
+          expect:
+            - statusCode: 200

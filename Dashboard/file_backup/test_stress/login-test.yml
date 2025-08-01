@@ -1,0 +1,19 @@
+config:
+  target: 'https://backend-agustrisa.as1.pitunnel.net'
+  phases:
+    - duration: 60     
+      arrivalRate: 20 
+  payload:
+    path: './user_credentials.csv'
+    fields:
+      - username
+      - password
+scenarios:
+  - flow:
+      - post:
+          url: "http://localhost:9921/api/login"
+          json:
+            full_name: "{{ username }}"
+            password: "{{ password }}"
+          expect:
+            - statusCode: 200
