@@ -10,3 +10,6 @@ coolprop
 scikit-learn==1.5.1
 xgboost
 gunicorn
+tensorflow
+dill
+catboost
