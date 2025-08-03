@@ -103,96 +103,85 @@ const CardDashboard = ({ titleCard, dataCard, idx, trend, activeIdx, onClick, is
   };
 
   const getTrendInfo = () => {
-    if (!trend) return { color: "text-green-600", symbol: "", icon: ArrowUp };
+    if (!trend) return { icon: ArrowUp };
     const { trendStatus } = trend;
     switch (trendStatus) {
       case "naik":
-        return { color: "text-green-600", symbol: "", icon: ArrowUp };
+        return { icon: ArrowUp };
       case "turun":
-        return { color: "text-red-600", symbol: "", icon: ArrowDown };
+        return { icon: ArrowDown };
       case "stabil":
-        return { color: "text-green-600", symbol: "", icon: ArrowUp };
+        return { icon: ArrowUp };
       default:
-        return { color: "text-green-600", symbol: "", icon: ArrowUp };
+        return { icon: ArrowUp };
     }
   };
 
-  const { color, symbol, icon } = getTrendInfo();
-
+  const { icon } = getTrendInfo();
+  
   return (
     <div
       onClick={() => onClick(idx)}
-      className={`mt-3 ${
+      className={`mt-3 overflow-hidden ${
         titleCard === "Dryness" || titleCard === "Power"
-          ? "w-[325px] md:w-[48%] md:h-[200px] mx-[1%] space-y-8 py-4 md:py-0"
-          : "w-[325px] md:w-[31%] mx-[1%] space-y-6 py-4"
-      } col-span-1 flex flex-col items-center justify-center shadow-md rounded-lg cursor-pointer transition-colors duration-300 
+          ? "w-[325px] md:w-[48%] md:h-[220px] mx-[1%]" // Menambahkan tinggi yang konsisten
+          : "w-[325px] md:w-[calc((100%/3)-2%)] md:h-[220px] mx-[1%]" // Menambahkan tinggi yang konsisten
+      } col-span-1 flex flex-col shadow-md rounded-lg cursor-pointer transition-colors duration-300 
       ${
         activeIdx === idx ? "bg-blue-950 text-white"
-        : isAnomali ? "bg-red-600 text-white"
         : isStale || !dataAvailable ? "bg-gray-500 text-white"
         : "bg-white text-green-950"
       }`}
     >
       {isStale || !dataAvailable ? (
-        <p className="text-center text-xl text-white">Data tidak tersedia</p>
+        <div className="flex-grow flex items-center justify-center">
+            <p className="text-center text-xl text-white">Data tidak tersedia</p>
+        </div>
       ) : (
         <>
-          {/* === PERUBAHAN UTAMA DI SINI === */}
-          {isAnomali ? (
-            // Jika anomali, tampilkan teks "Data Anomali"
-            <div className="flex justify-center items-center text-xl h-[28px]">
-              <p className="font-bold">Data Sedang Anomali</p>
+          {/* Wrapper untuk konten utama agar banner bisa di bawah */}
+          <div className="flex-grow flex flex-col justify-between items-center py-4 px-2">
+            <p className={`font-bold text-2xl md:text-[28px] text-center`}>
+              {titleCard === "Dryness"
+                ? "Dryness Fraction"
+                : titleCard === "Power"
+                ? "Power Potential"
+                : titleCard}
+            </p>
+            
+            <div className={`flex justify-center items-end font-bold ${aturUkuran(dataCard).fontSize}`}>
+              <p
+                className={`${
+                  titleCard === "Dryness" || titleCard === "Power"
+                    ? "text-2xl md:text-[64px]"
+                    : "text-2xl md:text-[40px]"
+                }`}
+              >
+                {aturUkuran(dataCard).value}
+              </p>
+              <small
+                className={`${
+                  titleCard === "Dryness" || titleCard === "Power"
+                    ? "text-base md:text-3xl relative md:top-3"
+                    : "text-base md:text-2xl relative md:top-1"
+                }`}
+              >
+                {symbolDesicion()}
+              </small>
             </div>
-          ) : (
-            // Jika normal, tampilkan tren seperti biasa
+
             <div className="flex justify-center items-center text-xl">
-              <p className="mr-1">
-                Trend ={" "}
-                <span className={`${color}`}>
-                  {symbol}
-                  {trend.trendStatus}
-                </span>
+              <p className="mr-2">
+                Tren = {trend?.trendStatus || 'stabil'}
               </p>
               <img src={icon} alt="trend icon" />
             </div>
-          )}
-          {/* === AKHIR DARI PERUBAHAN === */}
-          
-          <div className={`flex justify-center items-end font-bold ${aturUkuran(dataCard).fontSize}`}>
-            <p
-              className={`${
-                titleCard === "Dryness" || titleCard === "Power"
-                  ? "text-2xl md:text-[64px]"
-                  : "text-2xl md:text-[40px]"
-              }`}
-            >
-              {aturUkuran(dataCard).value}
-            </p>
-            <small
-              className={`${
-                titleCard === "Dryness" || titleCard === "Power"
-                  ? "text-base md:text-3xl relative md:top-3"
-                  : "text-base md:text-2xl relative md:top-1"
-              }`}
-            >
-              {symbolDesicion()}
-            </small>
           </div>
 
-          <p
-            className={`font-bold ${
-              titleCard === "Dryness" || titleCard === "Power"
-                ? "text-lg md:text-[28px]"
-                : "text-lg md:text-[28px]"
-            }`}
-          >
-            {titleCard === "Dryness"
-              ? "Dryness Fraction"
-              : titleCard === "Power"
-              ? "Power Potential"
-              : titleCard}
-          </p>
+          {/* === BAGIAN BANNER STATUS DI BAWAH === */}
+          <div className={`w-full p-2 text-center text-white font-bold ${isAnomali ? 'bg-red-500' : 'bg-green-500'}`}>
+            {isAnomali ? 'Data Anomali' : 'Data Normal'}
+          </div>
         </>
       )}
     </div>
