@@ -616,7 +616,7 @@ async def main_async_worker():
             dryness = calculate_dryness(pressure, temperature) 
             
             if dryness > 100:
-                dryness = 100
+                dryness = dryness - 0.5
 
             base_data_for_power = {'pressure': pressure, 'temperature': temperature, 'flow': flow}
             power_potential = predict_power(base_data_for_power)
