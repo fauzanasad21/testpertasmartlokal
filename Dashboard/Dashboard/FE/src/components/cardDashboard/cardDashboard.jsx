@@ -172,7 +172,7 @@ const CardDashboard = ({ titleCard, dataCard, idx, trend, activeIdx, onClick, is
 
             <div className="flex justify-center items-center text-xl">
               <p className="mr-2">
-                Tren = {trend?.trendStatus || 'stabil'}
+                tren = {trend?.trendStatus || 'stabil'}
               </p>
               <img src={icon} alt="trend icon" />
             </div>
