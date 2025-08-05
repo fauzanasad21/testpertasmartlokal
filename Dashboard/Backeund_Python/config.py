@@ -34,9 +34,9 @@ DATABASE_CONFIG = {
 
 # Konfigurasi Kalibrasi Awal
 CALIBRATION_SETTINGS = {
-    'temperature': {'min': 0, 'max': 400},
-    'flow': {'min': 0, 'max': 500},
-    'pressure': {'min': 0, 'max': 10}
+    'temperature': {'min': 0, 'max': 250},
+    'flow': {'min': 0, 'max': 0.25},
+    'pressure': {'min': 0, 'max': 15}
 }
 
 # Lokasi file model
