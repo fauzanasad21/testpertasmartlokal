@@ -2,3 +2,6 @@
 .moka/
 model/
 XG/
+retrain2.py
+__pycache__/
+catboost_info/

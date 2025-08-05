@@ -75,7 +75,7 @@ client.connect().then(() => {
     //     }
     // });
 
-    const PORT = process.env.PORT || 9921;
+    const PORT = process.env.PORT || 9925;
     server.listen(PORT, () => {
         console.log(`Server berjalan di http://localhost:${PORT}`);
     });

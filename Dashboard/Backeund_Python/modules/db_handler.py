@@ -31,7 +31,6 @@ def connect_db():
 
 def load_calibration_from_db():
     """Load calibration data from the database and initialize calibration settings."""
-    global calibration_settings
     try:
         conn = psycopg2.connect(**config.DATABASE_CONFIG)
         cursor = conn.cursor()
@@ -41,9 +40,9 @@ def load_calibration_from_db():
 
         for row in rows:
             sensor_type, min_value, max_value = row
-            if sensor_type in calibration_settings:
-                calibration_settings[sensor_type]['min'] = min_value
-                calibration_settings[sensor_type]['max'] = max_value
+            if sensor_type in config.CALIBRATION_SETTINGS:
+                config.CALIBRATION_SETTINGS[sensor_type]['min'] = min_value
+                config.CALIBRATION_SETTINGS[sensor_type]['max'] = max_value
                 print(f"Loaded calibration for {sensor_type}: min={min_value}, max={max_value}")
             else:
                 print(f"Sensor type '{sensor_type}' in database is not recognized in the application.")
@@ -67,8 +66,8 @@ async def save_to_database_async(data):
         cursor = db_connection.cursor()
         for item in batch_data:
             cursor.execute('''
-                INSERT INTO real_time_data (timestamp, flow, pressure, temperature, dryness, power_potential, anomali)
-                VALUES (%s, %s, %s, %s, %s, %s,)
+                INSERT INTO real_time_data (timestamp, flow, pressure, temperature, dryness, power_potential)
+                VALUES (%s, %s, %s, %s, %s, %s)
             ''', (item['timestamp'], item['flow'], item['pressure'], item['temperature'],
                   item['dryness'], item['power_potential']))
         db_connection.commit()

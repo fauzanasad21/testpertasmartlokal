@@ -103,7 +103,7 @@ async def main_async_worker():
             print('dryness = ', dryness)
             #print("power potential = ", power_potential)
             # Buat data dictionary untuk dikirim
-            data = {
+            data_anomali = {
                 'flow': flow,
                 'pressure': pressure,
                 'temperature': temperature,
@@ -113,11 +113,19 @@ async def main_async_worker():
                 'anomali_status': anomali_status,
                 'fitur_anomali': fitur_anomali
             }
+            data = {
+                'flow': flow,
+                'pressure': pressure,
+                'temperature': temperature,
+                'dryness': dryness,
+                'power_potential': power_potential,
+                'timestamp': timestamp
+            }
 
 
             # Pengiriman data secara paralel
             tasks = [
-                ws_handler.send_data_to_node(data),
+                ws_handler.send_data_to_node(data_anomali),
                 db_handler.save_to_database_async(data),
                 # save_to_database_asadd(data2),
                 mqtt_handler.send_to_aws_with_batch(mqtt_client, data)
