@@ -180,7 +180,7 @@ const CardDashboard = ({ titleCard, dataCard, idx, trend, activeIdx, onClick, is
 
           {/* === BAGIAN BANNER STATUS DI BAWAH === */}
           <div className={`w-full p-2 text-center text-white font-bold ${isAnomali ? 'bg-red-500' : 'bg-green-500'}`}>
-            {isAnomali ? 'Data Anomali' : 'Data Normal'}
+            {isAnomali ? 'Abnormal' : 'Normal'}
           </div>
         </>
       )}
