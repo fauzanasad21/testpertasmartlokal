@@ -147,11 +147,8 @@ def calculate_dryness(pressure, temperature):
 
         model = joblib.load('./model/dryness/model_xgboost.joblib')
         scaler = joblib.load('./model/dryness/scaler_data.joblib')
-<<<<<<< Updated upstream
+
         feature_names = ['pressure', 'temperature', 'Delta_Tsat']
-=======
-        feature_names = ['Pressure', 'Temperature', 'Delta_Tsat']
->>>>>>> Stashed changes
 
         input_data = pd.DataFrame([[pressure, temperature, tsat]], columns=feature_names)
         scaled_data = scaler.transform(input_data)

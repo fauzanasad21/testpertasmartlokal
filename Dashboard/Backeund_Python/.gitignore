@@ -5,3 +5,5 @@ XG/
 retrain2.py
 __pycache__/
 catboost_info/
+__pycache__/
+*.pyc
