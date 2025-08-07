@@ -198,9 +198,9 @@ def calculate_dryness(pressure, temperature):
         fluid = 'water'
         tsat = get_saturation_temperature(pressure, temperature, fluid)
 
-        model = joblib.load('./model/dryness/model4des.pkl')
-        scaler = joblib.load('./model/dryness/scaler4des.pkl')
-        feature_names = ['Pressure', 'Temperature', 'Delta_Tsat']
+        model = joblib.load('./model/dryness/model_xgboost.joblib')
+        scaler = joblib.load('./model/dryness/scaler_data.joblib')
+        feature_names = ['pressure', 'temperature', 'Delta_Tsat']
 
         input_data = pd.DataFrame([[pressure, temperature, tsat]], columns=feature_names)
         scaled_data = scaler.transform(input_data)
