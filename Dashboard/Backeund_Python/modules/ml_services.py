@@ -21,19 +21,20 @@ sequence_buffer = []
 preprocessing_pipeline_prediksi = None
 model_pipeline_prediksi = None
 
+
+
 def predict_power(base_data):
     """
     Memprediksi potensi daya (power_potential) dari data sensor.
+    Model dimuat sekali saat fungsi pertama kali dijalankan.
     """
     global preprocessing_pipeline_prediksi, model_pipeline_prediksi
-
-    # --- Memuat model jika belum ada ---
+    # --- Memuat model jika belum ada (hanya sekali) ---
     if model_pipeline_prediksi is None:
-        # ... (kode loading model Anda, tidak perlu diubah) ...
         try:
             print("[INFO] Memuat artefak prediksi daya untuk pertama kali...")
-            NAMA_MODEL_PREDIKSI = config.MODEL_PREDICT_POWER_PIPELINE
-            NAMA_PREPROCESSING_PREDIKSI = config.PREPROCESSING_PREDICT_POWER_PIPELINE
+            NAMA_MODEL_PREDIKSI = './model/power/modelpredictrobust_pipeline.dill'
+            NAMA_PREPROCESSING_PREDIKSI = './model/power/preprocessingpredictrobust2_pipeline.dill'
 
             with open(NAMA_PREPROCESSING_PREDIKSI, 'rb') as f:
                 preprocessing_pipeline_prediksi = dill.load(f)
@@ -42,71 +43,17 @@ def predict_power(base_data):
             print("[INFO] -> Artefak prediksi daya (pipeline) berhasil dimuat.")
         except Exception as e:
             print(f"[CRITICAL] Gagal memuat artefak prediksi daya. Error: {e}")
-            return 0.0
+            return 0.0 # Gagal memuat model, kembalikan nilai default
 
-    # --- Proses Prediksi yang Dipisah ---
-    input_df = None
-    processed_data = None
-    
-    # BAGIAN A: Pembuatan DataFrame
+    # --- Proses Prediksi ---
     try:
-        print("DIAGNOSTIK: [BAGIAN A] Mencoba membuat DataFrame...")
         input_df = pd.DataFrame([base_data], columns=['pressure', 'temperature', 'flow'])
-        print("DIAGNOSTIK: [BAGIAN A] SUKSES membuat DataFrame.")
-    except Exception as e:
-        print(f"[ERROR DI BAGIAN A] Gagal saat membuat DataFrame: {e}")
-        return 0.0
-
-    # BAGIAN B: Transformasi oleh Pipeline
-    try:
-        print("DIAGNOSTIK: [BAGIAN B] Mencoba menjalankan pipeline.transform()...")
         processed_data = preprocessing_pipeline_prediksi.transform(input_df)
-        print("DIAGNOSTIK: [BAGIAN B] SUKSES menjalankan pipeline.transform().")
-    except Exception as e:
-        print(f"[ERROR DI BAGIAN B] Gagal saat transformasi pipeline: {e}")
-        return 0.0
-
-    # BAGIAN C: Prediksi oleh Model
-    try:
-        print("DIAGNOSTIK: [BAGIAN C] Mencoba menjalankan model.predict()...")
         prediction = model_pipeline_prediksi.predict(processed_data)
-        print("DIAGNOSTIK: [BAGIAN C] SUKSES menjalankan model.predict().")
         return round(float(prediction[0]), 4)
     except Exception as e:
-        print(f"[ERROR DI BAGIAN C] Gagal saat prediksi model: {e}")
+        print(f"[ERROR] Error saat prediksi daya: {e}")
         return 0.0
-
-# def predict_power(base_data):
-#     """
-#     Memprediksi potensi daya (power_potential) dari data sensor.
-#     Model dimuat sekali saat fungsi pertama kali dijalankan.
-#     """
-#     global preprocessing_pipeline_prediksi, model_pipeline_prediksi
-#     # --- Memuat model jika belum ada (hanya sekali) ---
-#     if model_pipeline_prediksi is None:
-#         try:
-#             print("[INFO] Memuat artefak prediksi daya untuk pertama kali...")
-#             NAMA_MODEL_PREDIKSI = './model/power/modelpredictrobust_pipeline.dill'
-#             NAMA_PREPROCESSING_PREDIKSI = './model/power/preprocessingpredictrobust2_pipeline.dill'
-
-#             with open(NAMA_PREPROCESSING_PREDIKSI, 'rb') as f:
-#                 preprocessing_pipeline_prediksi = dill.load(f)
-#             with open(NAMA_MODEL_PREDIKSI, 'rb') as f:
-#                 model_pipeline_prediksi = dill.load(f)
-#             print("[INFO] -> Artefak prediksi daya (pipeline) berhasil dimuat.")
-#         except Exception as e:
-#             print(f"[CRITICAL] Gagal memuat artefak prediksi daya. Error: {e}")
-#             return 0.0 # Gagal memuat model, kembalikan nilai default
-
-#     # --- Proses Prediksi ---
-#     try:
-#         input_df = pd.DataFrame([base_data], columns=['pressure', 'temperature', 'flow'])
-#         processed_data = preprocessing_pipeline_prediksi.transform(input_df)
-#         prediction = model_pipeline_prediksi.predict(processed_data)
-#         return round(float(prediction[0]), 4)
-#     except Exception as e:
-#         print(f"[ERROR] Error saat prediksi daya: {e}")
-#         return 0.0
     
 def detect_anomaly(data_point):
     """
@@ -200,7 +147,11 @@ def calculate_dryness(pressure, temperature):
 
         model = joblib.load('./model/dryness/model_xgboost.joblib')
         scaler = joblib.load('./model/dryness/scaler_data.joblib')
+<<<<<<< Updated upstream
         feature_names = ['pressure', 'temperature', 'Delta_Tsat']
+=======
+        feature_names = ['Pressure', 'Temperature', 'Delta_Tsat']
+>>>>>>> Stashed changes
 
         input_data = pd.DataFrame([[pressure, temperature, tsat]], columns=feature_names)
         scaled_data = scaler.transform(input_data)
