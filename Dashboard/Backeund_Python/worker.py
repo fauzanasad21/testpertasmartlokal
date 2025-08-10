@@ -81,7 +81,7 @@ async def main_async_worker():
 
             # Validasi dan Prediksi
             flow, pressure, temperature = utils.validate_sensor_data(flow, pressure, temperature)
-            dryness = ml_services.calculate_dryness(pressure, temperature) 
+            dryness = ml_services.calculate_dryness(pressure, temperature, flow) 
             
             if dryness > 100:
                 dryness = dryness - 0.5

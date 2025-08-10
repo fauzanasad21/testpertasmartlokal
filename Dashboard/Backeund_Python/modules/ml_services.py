@@ -1,5 +1,6 @@
 import joblib
 import dill
+import pickle
 import json
 import pandas as pd
 import numpy as np
@@ -7,8 +8,10 @@ import CoolProp.CoolProp as CP
 from tensorflow.keras.models import load_model
 import config
 
-model_dryness = None
-scaler_dryness = None
+model_gbr = None
+scaler_gbr = None
+model_twall = None
+scaler_twall = None
 
 autoencoder = None
 scaler_anomaly = None
@@ -17,6 +20,16 @@ FEATURE_NAMES = []
 THRESHOLDS_PER_FEATURE = None
 SEQ_LENGTH = None
 sequence_buffer = []
+
+def create_features_gbr(df):
+    X_new = df.copy()
+    X_new['P_T'] = X_new['Pressure'] * X_new['Temperature']
+    X_new['Twall_flow'] = X_new['Twall'] * X_new['Flow']
+    X_new['Pressure_sq'] = X_new['Pressure'] ** 2
+    X_new['Temperature_sq'] = X_new['Temperature'] ** 2
+    X_new['Log_Pressure'] = np.log1p(X_new['Pressure'])
+    X_new['Log_Temperature'] = np.log1p(X_new['Temperature'])
+    return X_new
 
 preprocessing_pipeline_prediksi = None
 model_pipeline_prediksi = None
@@ -149,21 +162,79 @@ def get_saturation_temperature(pressure, temperature, fluid):
     Delta_Tsat = temperature - Tsat
     return Delta_Tsat
 
-def calculate_dryness(pressure, temperature):
+def calculate_dryness(pressure, temperature, flow):
+    global model_gbr, scaler_gbr, model_twall, scaler_twall
+
+    # --- Bagian 1: Lazy Loading Artefak (Model & Scaler) ---
+    if model_gbr is None:
+        try:
+            print("[INFO] Memuat artefak Rantai Prediksi Dryness untuk pertama kali...")
+            PATH_GBR_MODEL = "D:/Kuliah/GithubLokal/tespertasmartlokal/Model Dryness Maks100/GBR_model.pkl"
+            PATH_GBR_SCALER = "D:/Kuliah/GithubLokal/tespertasmartlokal/Model Dryness Maks100/GBR_scaler.pkl"
+            PATH_TWALL_MODEL = "D:/Kuliah/GithubLokal/tespertasmartlokal/Model Dryness Maks100/Twall_model.pkl"
+            PATH_TWALL_SCALER = "D:/Kuliah/GithubLokal/tespertasmartlokal/Model Dryness Maks100/Twall_scaler.pkl"
+            
+            # Memuat model & scaler GBR (disimpan dengan pickle)
+            with open(PATH_GBR_MODEL, 'rb') as f:
+                model_gbr = pickle.load(f)
+            with open(PATH_GBR_SCALER, 'rb') as f:
+                scaler_gbr = pickle.load(f)
+
+            # Memuat model & scaler Twall (disimpan dengan joblib)
+            model_twall = joblib.load(PATH_TWALL_MODEL)
+            scaler_twall = joblib.load(PATH_TWALL_SCALER)
+            
+            print("[INFO] -> Semua artefak Rantai Prediksi Dryness berhasil dimuat.")
+        
+        except Exception as e:
+            print(f"[CRITICAL] Gagal memuat artefak Dryness. Error: {e}")
+            return None
+
+    # --- Bagian 2: Proses Rantai Prediksi ---
     try:
-        fluid = 'water'
-        tsat = get_saturation_temperature(pressure, temperature, fluid)
+        # === LANGKAH 1: Prediksi Twall ===
+        twall_input_df = pd.DataFrame([{'Pressure': pressure, 'Temperature': temperature, 'Flow': flow}])
+        twall_input_scaled = scaler_twall.transform(twall_input_df)
+        predicted_twall = model_twall.predict(twall_input_scaled)[0]
 
-        model = joblib.load('./model/dryness/model_xgboost.joblib')
-        scaler = joblib.load('./model/dryness/scaler_data.joblib')
-        feature_names = ['pressure', 'temperature', 'Delta_Tsat']
+        # === LANGKAH 2: Hitung DeltaTsatTwall ===
+        pressure_pa = pressure * 100000
+        tsat = CP.PropsSI('T', 'P', pressure_pa, 'Q', 1, 'Water') - 273.15
+        calculated_deltat = predicted_twall - tsat
 
-        input_data = pd.DataFrame([[pressure, temperature, tsat]], columns=feature_names)
-        scaled_data = scaler.transform(input_data)
-        prediction = model.predict(scaled_data)
+        # === LANGKAH 3: Prediksi Dryness (Final) ===
+        gbr_input_df = pd.DataFrame([{
+            'Pressure': pressure,
+            'Temperature': temperature,
+            'Flow': flow,
+            'Twall': predicted_twall,
+            'DeltaTsatTwall': calculated_deltat
+        }])
+        
+        # Panggil fungsi create_features_gbr
+        gbr_engineered = create_features_gbr(gbr_input_df)
+        gbr_scaled = scaler_gbr.transform(gbr_engineered)
+        final_dryness = model_gbr.predict(gbr_scaled)[0]
 
+        return float(final_dryness)
 
-        return float(prediction)  
     except Exception as e:
-        print(f"Error calculating dryness with ML model: {e}")
+        print(f"[ERROR] Terjadi kesalahan saat proses prediksi Dryness: {e}")
         return None
+    # try:
+    #     fluid = 'water'
+    #     tsat = get_saturation_temperature(pressure, temperature, fluid)
+
+    #     model = joblib.load('./model/dryness/model_xgboost.joblib')
+    #     scaler = joblib.load('./model/dryness/scaler_data.joblib')
+    #     feature_names = ['pressure', 'temperature', 'Delta_Tsat']
+
+    #     input_data = pd.DataFrame([[pressure, temperature, tsat]], columns=feature_names)
+    #     scaled_data = scaler.transform(input_data)
+    #     prediction = model.predict(scaled_data)
+
+    #     return float(prediction)  
+    # except Exception as e:
+    #     print(f"Error calculating dryness with ML model: {e}")
+    #     return None
+
