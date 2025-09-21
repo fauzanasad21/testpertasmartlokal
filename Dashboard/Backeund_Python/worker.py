@@ -61,7 +61,7 @@ async def main_async_worker():
 
             timestamp1 = datetime.now()
             timestamp = utils.datetime_converter(timestamp1)
-            
+           
 
             p_noise_val = p_noise(time_counter * 0.1)
             t_noise_val = t_noise(time_counter * 0.1)
