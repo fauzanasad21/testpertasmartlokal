@@ -32,6 +32,7 @@ const Modal = ({ type, close, data }) => {
     setForbidden(false);
 
     const dataSend = {
+      timestamp: data.timestamp, // Baruu
       temperature: data.temperature,
       pressure: data.pressure,
       flow: data.flow,
@@ -48,11 +49,13 @@ const Modal = ({ type, close, data }) => {
         setSuccess(true);
       }
     } catch (error) {
-      if (error.response.status === 403) {
+      if (error.response && error.response.status === 403) { // Tambahkan pengecekan 'error.response'
         setForbidden(true)
       } else {
         setFailed(true);
       }
+      // Untuk debugging, tampilkan pesan error dari server
+      console.error("Server Response Error:", error.response ? error.response.data : error.message);
     } finally {
       setLoading(false);
     }
@@ -117,7 +120,41 @@ const Modal = ({ type, close, data }) => {
 
 
 
-
+const contentDeleteConfirmation = ({ onConfirm, itemCount }) => {
+    return (
+      <>
+        <div className="title text-white flex justify-between py-4 bg-[#d9534f] rounded-t-lg">
+          <p className="pl-4">Konfirmasi Hapus</p>
+          <p className="pr-4 cursor-pointer" onClick={close}>x</p>
+        </div>
+        <div className="p-6">
+          <img
+            src={Warning} // Menggunakan ikon warning
+            alt="Warning Logo"
+            className="mx-auto mb-4 w-20 h-20"
+          />
+          <h6 className="text-lg font-semibold text-center mb-4">
+            {/* Tampilkan jumlah data yang akan dihapus */}
+            Apakah Anda yakin ingin menghapus {itemCount} data yang dipilih?
+          </h6>
+          <div className="mt-4 flex justify-center space-x-4">
+            <button
+              className="btn w-48 h-14 border-2 bg-white text-[#002E1A] px-4 py-2 rounded hover:bg-gray-100"
+              onClick={close} // Tombol 'Tidak' hanya menutup modal
+            >
+              Tidak, Batalkan
+            </button>
+            <button
+              className="btn w-48 h-14 border-2 bg-[#d9534f] text-white px-4 py-2 rounded hover:bg-red-700"
+              onClick={onConfirm} // Tombol 'Ya' akan menjalankan fungsi hapus
+            >
+              Ya, Hapus
+            </button>
+          </div>
+        </div>
+      </>
+    );
+  };
 
   const contentKalibrasi = () => {
     return (
@@ -464,7 +501,11 @@ const Modal = ({ type, close, data }) => {
             contentFailed("Gagal menyimpan Data Real. Silakan coba lagi.")}
 
           {type === 5 && contentNotComplete("Tolong isi seluruh kolom sebelum disimpan")}
-        </div>
+                  {/* ======================= TAMBAHAN Baruu ======================= */}
+        {/* Ini akan menampilkan pop-up konfirmasi hapus saat tipenya 6 */}
+        {type === 6 && contentDeleteConfirmation({ onConfirm: data.onConfirm, itemCount: data.itemCount })}
+        {/* ==================================================================== */}
+       </div>
       </motion.div>
       <div
         className="fixed inset-0 bg-black bg-opacity-50 z-40"
@@ -473,5 +514,7 @@ const Modal = ({ type, close, data }) => {
     </>
   );
 };
+
+
 
 export default Modal;

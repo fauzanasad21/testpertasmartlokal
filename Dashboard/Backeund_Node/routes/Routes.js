@@ -13,7 +13,7 @@ const sendPinToAdmin = require('../middleware/sendmail');
 const {authMiddleware, refreshAccessToken, checkAdmin} = require('../middleware/authmiddleware');
 const { dynamicRateLimiter, incrementAttempts } = require('../middleware/rateLimiter');
 const { setTwall, getTwall } = require('../controllers/tWall');
-const { saveDataTraining, getDataTraining, putDataTraining, deleteDataTraining } = require('../controllers/formTrainingdata');
+const { saveDataTraining, getDataTraining, putDataTraining, deleteDataTraining, getChartData } = require('../controllers/formTrainingdata');
 
 const router = express.Router();
 
@@ -57,5 +57,9 @@ router.get('/NewDataReal',NewDataReal); //gadipake
 router.put('/chngDtaTrng',   putDataTraining);
 router.delete('/dltDtaTrng',   deleteDataTraining);
 
+// ======================= TAMBAHAN =======================
+// Rute baru untuk menyediakan data ke komponen grafik di frontend
+router.get('/chart-data', getChartData);
+// =================================================================
 
 module.exports = router;
